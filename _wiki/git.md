@@ -53,6 +53,8 @@ keywords: Git, 版本控制
 | 删除文件                                            | git rm filename                                            |      |
 |                                                     |                                                            |      |
 
+## 复杂情景
+
 ### 修改老旧commit信息
 
 git rebase -i 要修改的前一个commit_ID 
