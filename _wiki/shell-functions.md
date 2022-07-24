@@ -1,8 +1,8 @@
 ---
 layout: wiki
 title: Shell 常用函数
-cate1: Shell
-cate2: Linux
+cate1: Linux
+cate2: Shell
 categories: Shell
 description: Shell 常用函数
 keywords: shell, 函数, function, Linux
