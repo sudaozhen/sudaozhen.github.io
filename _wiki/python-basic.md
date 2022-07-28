@@ -247,7 +247,7 @@ True
 
 False
 
-元组存储数据不可变更，而列表可以变更。
+元组存储数据<span style='color:red'>不可变更</span>，而列表可以变更。
 
 ```python
 filter()  #取元组中大于或小于某变量的元素
@@ -661,7 +661,7 @@ print('当前文件指针的位置 %s' %file6.tell())
 file6.close()
 ```
 
-**注意：中文GB2312编码一个中文字符占两个字节的指针，seek偏移按字节计算**
+<span style='color:red'>注意：中文GB2312编码一个中文字符占两个字节的指针，seek偏移按字节计算</span>
 
 ## 异常的检测和处理
 
@@ -685,9 +685,11 @@ finally:
 #### 错误类型：
 
 ##### 变量未定义：
-NameError: name 'j' is not defined
+<span style='color:red'>NameError: name 'j' is not defined</span>
+
 ##### 语法错误：
-SyntaxError: invalid syntax
+<span style='color:red'>SyntaxError: invalid syntax</span>
+
 ##### 序列或元组超出范围：
 例：
 
@@ -696,7 +698,7 @@ a='123'
 print(a[3])
 ```
 
-IndexError: string index out of range
+<span style='color:red'>IndexError: string index out of range</span>
 
 ##### 字典键值错误：
 
@@ -707,7 +709,7 @@ d = {'a':2, 'c':3}
 print(d['b'])
 ```
 
-KeyError: 'b'
+<span style='color:red'>KeyError: 'b'</span>
 
 ##### 输入类型错误：
 
@@ -717,7 +719,7 @@ KeyError: 'b'
 year = int(input('input year:'))
 ```
 
-ValueError: invalid literal for int() with base 10: 'iji'
+<span style='color:red'>ValueError: invalid literal for int() with base 10: 'iji'</span>
 
 异常处理代码：
 
@@ -737,7 +739,7 @@ a = 123
 a.append()
 ```
 
-AttributeError: 'int' object has no attribute 'append'
+<span style="color:red;">AttributeError: 'int' object has no attribute 'append'</span>
 
 #### 异常处理的组合，通过元组组合
 
@@ -772,7 +774,7 @@ except NameError:
 print('my custom error')
 ```
 
-#### **文件操作最终要关闭文件**
+#### <span style='color:red'>文件操作最终要关闭文件</span>
 
 ```python
 try:
@@ -795,3 +797,4 @@ finally:
 - 异常产生
 - 异常检测
 - 异常处理
+
