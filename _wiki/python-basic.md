@@ -14,13 +14,13 @@ keywords: Python, code, program
 
 ![](D:\test\sudaozhen.github.io\images\wiki\python\image1.png)
 
-Python版本选择：
+### Python版本选择：
 
 Python3是未来
 
 Python发行版： Anaconda （包含大量库）
 
-Python编程利器：
+### Python编程利器：
 
 Python官方文档
 
@@ -797,4 +797,1165 @@ finally:
 - 异常产生
 - 异常检测
 - 异常处理
+
+# 函数、模块
+
+## 函数的定义和常用操作
+
+### 统计小说人物出现次数案例
+
+使用Python对小说内容进行分析，统计出主角的出现次数
+
+```python
+f = open('name.txt')
+data = f.read()
+print(data.split('|'))
+# 读取兵器的名称
+f2 = open('weapon.txt')
+# data2 = f2.read()
+i = 1
+for line in f2.readlines():
+	if i % 2 == 1:
+		# strip()把\n换行符删除
+		print(line.strip('\n'))
+	i +=1
+# GB18030的编码比GB2312多，使用GB2312打开会有部分编码不支持
+f3 = open('sanguo.txt', encoding='GB18030')
+# replace做字符替换，将换行符替换掉
+print(f3.read(),replace('\n',''))
+```
+
+### 函数
+
+函数是对程序逻辑进行结构化的一种编程方法
+
+函数的定义:
+
+``` python
+def 函数名称():
+	代码
+    return 需要返回的内容
+```
+
+函数的调用:
+
+```python
+函数名称()
+```
+
+函数名称以字母或下划线开头，中间为数字、字母和下划线
+
+例：
+
+```python
+import re
+def find_main_charecters( charecter_name ):
+	with open('sanguo.txt', encoding='GB18030') as f:
+		data = f.read().replace('\n', '')
+		name_num = re.findall(charecter_name, data)
+		# print('主角 %s 出现 %s 次数' %(hero,len(name_num)))
+	return charecter_name, len(name_num)
+# 读取人物的信息
+name_dict = {}
+with open('name.txt', encoding='GB18030') as f:
+	for line in f:
+		names = line.split('|')
+		for n in names:
+			name, name_num = find_main_charecters(n)
+			name_dict[n] = name_num
+# 读取武器信息
+weapon_dict = {}
+with open('weapon.txt', encoding='GB18030') as f:
+	i = 1
+	for line in f:
+		if i%2 == 1:
+			weapon_name, weapon_number = find_main_charecters(line.strip())
+			weapon_dict[weapon_name] = weapon_number
+		i += 1
+# 字典排序
+name_sorted = sorted(name_dict.items(), key=lambda item: item[1], reverse=True)
+print(name_sorted[0:10])
+weapon_sorted = sorted(weapon_dict.items(), key=lambda item: item[1],reverse=True)
+print(weapon_sorted[0:10])
+```
+
+## 函数的可变长参数
+
+函数调用默认按顺序传参，如果不按顺序传参则使用关键字参数
+
+例：
+
+```python
+print('abc', end='\n\n')
+print('123')
+```
+
+例：
+
+```python
+def func (a, b, c):
+	print('a= %s' %a)
+	print('b= %s' %b)
+	print('c= %s' %c)
+
+func(1, c=4, b=3)
+```
+
+### 可变长函数
+
+例：
+
+```python
+# 取得参数的个数
+def howlong(first, *other):
+	print(1 + len(other))
+howlong(123, 456, 789)
+```
+
+## 函数的变量作用域
+
+### 函数内和函数外同名变量
+
+例：
+
+```python
+var1 = 123
+def func():
+	# var1 = 456
+	print(var1)
+func()
+```
+
+输出：
+
+```python
+123
+```
+
+例：
+
+```python
+var1 = 123
+def func():
+	var1 = 456
+	print(var1)
+func()
+print(var1)
+```
+
+输出：
+
+```python
+456
+123
+```
+
+### 在函数内使用全局变量使用关键字global
+
+例：
+
+```python
+var1 = 123
+def func():
+	global var1
+	var = 456
+	print(var1)
+func()
+print(var1)
+```
+
+输出：
+
+```python
+456
+456
+```
+
+## 函数的迭代器与生成器
+
+### 迭代器
+
+用于循环操作列表
+
+例：
+
+```python
+# 循环输出列表
+list1 = [1, 2, 3]
+it = iter(list1)
+print(next(it))
+print(next(it))
+print(next(it))
+print(next(it)) #except
+```
+
+输出：
+
+```python
+1
+2
+3
+>>>出错
+```
+
+### 生成器
+
+例：
+
+```python
+# range循环输出，range（起始，终止，步长）
+for i in range(10, 20, 2):
+	print(i)
+```
+
+<span style='color:red'>步长无法使用小数</span>
+
+#### 使用生成器构建函数
+
+例：
+
+```python
+def frange(start, stop, step):
+	x = start
+	while x < stop:
+		yield x
+		# yield生成器，每次返回数值并记录位置，下次调用再继续
+		x += step
+for i in frange(10, 20, 0.5):
+	print(i)
+```
+
+## lambda表达式
+
+例：
+
+```python
+def true():return True
+lambda : True
+```
+
+例：
+
+``` python
+def add(x, y):return x + y
+lambda x, y : x + y
+```
+
+例：
+
+```python
+lambda x:x<= (month, day)
+```
+
+等效于:arrow_down:
+
+```python
+def func1(x):
+	return x <= (month, day)
+```
+
+例：
+
+```python
+lambda item:item[1]
+```
+
+等效于:arrow_down:
+
+```python
+def func2(item):
+	return item[1]
+adict = {'a':'aa','b':'bb'}
+for i in adict.items():
+	print(func2(i))
+```
+
+输出：
+
+```python
+'aa'
+'bb'
+```
+
+返回字典的值
+
+lambda可以简化简单的函数处理
+
+## python内建函数
+
+### filter()
+
+filter(函数，迭代器)
+
+例：
+
+```python
+a = [1,2,4,5,6,7,8]
+print(list(filter(lambda x:x>2, a)))
+```
+
+输出a列表中大于2的元素
+
+### map()
+
+map(函数，可变长参数)
+
+例：
+
+```python
+a = [1,2,3,4]
+print(list(map(lambda x:x+1, a)))
+```
+
+输出：
+
+```py
+[2, 3, 4, 5]
+```
+
+a列表每个元素+1
+
+
+
+例：
+
+```python
+a = [1,2,3,4]
+b = [3,4,5,6]
+print(list(map(lambda x,y:x+y, a,b)))
+```
+
+输出：
+
+```python
+[4, 6, 8, 10]
+```
+
+a和b的对应元素相加
+
+### reduce()
+
+导入reduce模块
+
+```python
+from functools import reduce
+reduce(函数，序列[, 初始值])
+```
+
+把序列和初始值按照函数方式运算
+
+例：
+
+```python
+print(reduce(lambda x,y: x+y, [2,3,4], 1))
+```
+
+输出：
+
+```python
+10
+```
+
+初始值1+序列第一个值2的结果作为x接着与序列第二个值相加再与第三个值相加，即（（（1+2）+3）+4）
+
+### zip()
+
+```python
+for i in zip((1,2,3), (4,5,6)):
+	print(i)
+```
+
+输出：
+
+```python
+(1, 4)
+(2, 5)
+(3, 6)
+```
+
+可迭代函数，即帮助中有`__iter__`字段可使用for循环
+
+例：
+
+```python
+dicta = {'a':'aa','b':'bb'}
+dictb = zip(dicta.values(),dicta.keys())
+print(dict(dictb))
+```
+
+输出：
+
+```python
+{'aa': 'a', 'bb': 'b'}
+```
+
+实现字典key和数值对调
+
+### help()  显示帮助
+
+```python
+help(zip)
+```
+
+## 闭包的定义
+
+函数嵌套，内部函数引用外部函数的变量称为闭包
+
+例：
+
+```python
+def func():
+	a = 1
+	b = 2
+	return a + b
+def sum(a):
+	def add(b):
+		return a+b
+	return add     #返回函数名
+# add 函数名称或函数引用
+# sdd() 函数调用
+num1 = func()
+num2 = sum(2)
+print(type(num1))
+# 返回类型为函数
+print(type(num2))
+print(num2(4))
+```
+
+输出：
+
+```python
+<class 'int'>
+<class 'function'>
+6
+```
+
+计数器，例：
+
+```python
+# 使用闭包定义计数器，每调用一次加1，可传递初值，空则从0开始计数
+def counter(FIRST=0):
+	cnt =[FIRST] 
+	def add_one():
+		cnt[0] += 1
+		return cnt[0]
+	return add_one
+# 分开计数
+num5 = counter(5)
+num10 = counter(10)
+print(num5())
+print(num5())
+print(num5())
+print(num10())
+print(num10())
+```
+
+输出：
+
+```python
+6
+7
+8
+11
+12
+```
+
+## 闭包的使用
+
+```python
+# a * x + b = y, 数学计算，调用一次固定a和b，下次仅传x
+def a_line(a,b):
+	def arg_y(x):
+		return a*x+b
+	return arg_y
+
+# 使用lambda进一步简化
+def b_line(a,b):
+	return lambda x: a*x+b
+    
+# a=3,b=5
+# x=10 y=?
+# 可使用多条直线函数
+line1 = a_line(3,5)
+line2 = a_line(5,10)
+print(line1(10))
+print(line1(20))
+print(line2(5))
+```
+
+输出：
+
+```python
+35
+65
+35
+```
+
+## 装饰器的定义
+
+### time库的使用
+
+```python
+import time
+# 显示1970年1月1日至今的秒数
+print(time.time())
+# 延时3秒
+time.sleep(3)
+```
+
+### 计算运行时间：
+
+```python
+import time
+# 显示1970年1月1日至今的秒数
+#print(time.time())
+# 延时3秒
+def i_can_sleep():
+    time.sleep(3)
+start_time = time.time()
+i_can_sleep()
+stop_time = time.time()
+print('函数运行了 %s 秒' %(stop_time - start_time))
+```
+
+输出：
+
+```python
+函数运行了 3.003718614578247 秒
+```
+
+### 使用装饰器
+
+```python
+import time
+def timer(func):
+	def wrapper():
+		start_time = time.time()
+		func()
+		stop_time = time.time()
+		print("运行时间是 %s 秒" % (stop_time - start_time))
+	return wrapper
+
+# 延时3秒
+@timer #@语法塘，timer=>装饰函数，
+def i_can_sleep():  #被装饰函数
+	time.sleep(3)
+
+i_can_sleep()
+```
+
+输出：
+
+```python
+运行时间是 3.0025811195373535 秒
+```
+
+## 装饰器的使用
+
+### 不带参数的装饰器的伪代码：
+
+```python
+def wai(func):
+    def nei():
+        start ...
+        func()
+        stop ...
+        [return ...]
+    return nei
+```
+
+### 带参数的装饰器:
+
+```python
+# 带参修饰器
+def new_tips(argv):
+	def tips(func):
+		def nei(a,b):
+			# 修饰器参数，被修饰函数名
+			print('start %s,function name %s' %(argv, func.__name__))
+			func(a,b)
+			print('stop %s' %argv)
+		return nei
+	return tips
+@new_tips('add_module')
+def add(a,b):
+	print(a+b)
+@new_tips('sub_module')
+def sub(a,b):
+	print(a-b)
+sub(3,4)
+add(5,2)
+```
+
+输出：
+
+```python
+start sub_module,function name sub
+-1
+stop sub_module
+start add_module,function name add
+7
+stop add_module
+```
+
+## 上下文管理器
+
+```python
+fd = open('name.txt')
+try:
+    for line in fd:
+        print(line)
+finally:
+    fd.close()
+# with ... as 即上下文管理器，
+# 出错后执行最终的类似以上写法的finally:来关闭文件
+with open('name.txt') as f:
+    for line in f:
+        print(line)
+```
+
+## 模块的定义
+
+### 模块
+
+模块是在代码量变得相当大之后，为了将需要重复使用的有组织的代码段放在一起，这部分代码可以附加到现有的程序中，附加的过程叫做导入（import）
+
+### 导入模块的一般写法
+
+- import 模块名称
+- form 模块名称 import 方法名
+
+#### 导入模块并简化写法:
+
+```python
+import time as t
+t.sleep()
+```
+
+#### 不推荐写法 ，省略模块名:
+
+```python
+from time import sleep
+sleep()
+```
+
+### 编写模块：
+
+模块文件名： mymod.py
+
+```python
+def print_me():
+    print('me')
+    
+# print_me()
+```
+
+调用编写的模块文件：
+
+```python
+import mymod
+mymod.print_me()
+```
+
+输出：
+
+```python
+me
+```
+
+## PEP8编码规范
+
+### 遵循编码规范
+
+[https://peps.python.org/pep-0008/](https://peps.python.org/pep-0008/)
+
+### 自动格式化软件安装
+
+#### pyCharm
+
+pip install autopep8
+
+pyCharm添加pep8：
+
+属性=>扩展工具=>添加=>pep8
+
+使用：
+
+右键=>扩展工具=>pep8
+
+#### vscode
+
+vscode 安装python插件 
+
+右键=>格式化文档
+
+# 面向对象编程
+
+## 类与实例
+
+```python
+# 面向过程编程
+user1 = {'name':'tom', 'hp':100}
+user1 = {'name':'jerry', 'hp':80}
+def print_role(rolename):
+	print('name is %s, hp is %s' %(rolename['name'],rolename['hp']))
+print_role(user1)
+
+# 面向对象的编程
+class Player():     # 定义一个类，类名以大写字母开头
+	def __init__(self,name,hp):  # 实例化一个类后自动执行
+		self.name = name
+		self.hp= hp
+	def print_role(self):   #定义一个方法
+		print('%s: %s' %(self.name,self.hp))
+
+user1 = Player('tom',100)  #类的实例化
+user2 = Player('jerry',90)
+
+user1.print_role()
+user2.print_role()
+```
+
+输出：
+
+```python
+tom: 100 
+jerry: 90
+```
+
+## 如何增加类的属性和方法
+
+### 定义空类：
+
+```python
+class Monster():
+	'定义怪物类'
+	pass
+```
+
+### 增加类的属性和方法：
+
+```python
+class Player():     # 定义一个类
+	def __init__(self, name, hp, occu):  # 实例化一个类后自动执行
+		self.name = name  # 变量称作属性
+		self.hp = hp
+		self.occu = occu
+    def print_role(self):  # 定义一个方法
+		print('%s: %s %s' % (self.name, self.hp, self.occu))
+	def update_name(self, newname):
+		self.name = newname
+
+user1 = Player('tom', 100, 'war')  # 类的实例化
+user2 = Player('jerry', 90, 'master')
+
+user1.print_role()
+user2.print_role()
+
+user1.update_name('willsen')
+user1.print_role()
+```
+
+输出：
+
+```python
+tom: 100 war
+jerry: 90 master
+willsen: 100 war
+```
+
+可以通过赋值的方式修改name属性：
+
+```python
+user1.name = 'aaa'
+user1.print_role()
+```
+
+### 类的封装：
+
+```python
+class Player():     # 定义一个类
+    def __init__(self, name, hp, occu):  # 实例化一个类后自动执行
+        self.__name = name  # 变量称作属性
+        self.hp = hp
+        self.occu = occu
+    def print_role(self):  # 定义一个方法
+        print('%s: %s %s' % (self.__name, self.hp, self.occu))
+    def update_name(self, newname):
+        self.__name = newname
+
+user1 = Player('tom', 100, 'war')  # 类的实例化
+user2 = Player('jerry', 90, 'master')
+
+user1.print_role()
+user2.print_role()
+
+user1.update_name('willsen')
+user1.print_role()
+
+user1.__name = 'aaa'
+user1.print_role()
+```
+
+输出：
+
+```python
+tom: 100 war
+jerry: 90 master
+willsen: 100 war
+willsen: 100 war
+```
+
+<span style='color:red'>即无法通过赋值的方式修改name属性，只能通过update_name方法修改name</span>
+
+## 类的继承
+
+### 继承的概念
+
+猫科动物（父类） -> 猫（子类）
+
+### 定义子类
+
+class 子类名(父类名):
+
+```python
+class Monster():  # 父类
+    '定义怪物类'
+    def __init__(self,hp=100):
+        self.hp = hp
+    def run(self):
+        print('移动到某个位置')
+    def whoami(self):
+        print('我是怪物父类')
+
+class Animals(Monster):   #子类
+    '普通怪物'
+    def __init__(self, hp=10):
+        # 子类中重复父类的初始化
+        super().__init__(hp)
+
+class Boss(Monster):   #子类
+    'Boss类怪物'
+    def __init__(self, hp=1000):
+        # 子类中重复父类的初始化
+        super().__init__(hp)
+
+    def whoami(self):  #重复方法会覆盖父类中的方法
+        print('我是怪物我怕谁')
+
+a1 = Monster(200)
+print(a1.hp)
+print(a1.run())
+a2 = Animals(1)
+print(a2.hp)
+print(a2.run())
+a3 = Boss(800)
+a3.whoami()
+```
+
+输出：
+
+```python
+200
+移动到某个位置
+None
+1
+移动到某个位置
+None
+我是怪物我怕谁
+```
+
+```python
+# 打印对象属于哪个类
+print('a1的类型 %s' %type(a1))
+print('a2的类型 %s' %type(a2))
+print('a3的类型 %s' %type(a3))
+# 判断对象a2是否属于Monster的子类，返回True、False
+# 用于判断是否属于继承关系
+print(isinstance(a2,Monster))
+```
+
+父类和子类都定义了同名方法，子类会覆盖父类的方法（多态）
+
+元组、列表和字符串都是类，都继承于object父类
+
+类是描述具有相同属性和方法的集合。
+
+类的特性：
+
+- 封装（无法访问的属性）；
+- 继承（子类继承父类的属性和方法）；
+- 多态（父类定义的方法，子类可以覆盖）。
+
+
+
+类无法直接应用，必须实例化才能操作。
+
+## 类的使用-自定义with语句
+
+### with语句的正常调用：
+
+```python
+class Testwith():
+    def __enter__(self):
+        print('run')
+    def __exit__(self,exc_type, exc_val, exc_tb):
+        print('exit')
+with Testwith():
+print('Test is running')
+```
+
+输出：
+
+```python
+run
+Test is running
+exit
+```
+
+### with语句异常处理：
+
+```python
+class Testwith():
+    def __enter__(self):
+        print('run')
+    def __exit__(self,exc_type, exc_val, exc_tb):
+        if exc_tb is None:
+            print('正常结束')
+        else:
+            print('has error %s' %exc_tb)
+with Testwith():
+    print('Test is running')
+raise NameError('testNameError')
+```
+
+输出：
+
+```python
+run
+Test is running
+has error <traceback object at 0x000002D4E2F80840>
+Traceback (most recent call last):
+    File "with_test.py", line 26, in <module>
+    raise NameError('testNameError')
+NameError: testNameError
+```
+
+# 多线程编程
+
+## 多线程编程的定义
+
+### 启动5个进程
+
+```python
+import threading
+import time
+from threading import current_thread
+
+def myThread(arg1, arg2):
+    print(current_thread().name, 'start')
+    print('%s %s' %(arg1, arg2))
+    time.sleep(1)
+    print(current_thread().name, 'stop')
+
+for i in range(1, 6, 1):  # 循环5次
+    # t1 = myThread(i, i+1)
+    # 设置线程
+    t1 = threading.Thread(target=myThread, args=(i, i+1))
+    # 启动线程
+    t1.start()
+print(current_thread().name, 'end')
+```
+
+输出：
+
+```python
+Thread-1 (myThread) start
+1 2
+Thread-2 (myThread) start
+2 3
+Thread-3 (myThread) start
+3 4
+Thread-4 (myThread) start
+4 5
+Thread-5 (myThread) start
+5 6
+MainThread end
+Thread-5 (myThread) stop
+Thread-3 (myThread) stop
+Thread-2 (myThread) stop
+Thread-1 (myThread) stop
+Thread-4 (myThread) stop
+```
+
+分别启动5个线程执行，最后主线程先结束，子线程后结束
+
+### 重定义Thread类里的run，使子进程先结束
+
+``` python
+import threading
+from threading import current_thread
+# threading.Thread().run()
+# 继承threading模块里的Thread类
+class Mythread(threading.Thread):
+    # 重定义run方法，覆盖Thread类里的run
+    def run(self):
+        print(current_thread().name, 'start')
+        print('run')
+        print(current_thread().name, 'stop')
+
+t1 = Mythread()
+t1.start()
+t1.join()  # 等待线程结束
+
+# 主线程结束
+print(current_thread().name, 'end')
+```
+
+输出：
+
+```python
+Thread-1 start
+run
+Thread-1 stop
+MainThread end
+```
+
+## 经典的生产者和消费者问题
+
+水池不同粗细的水管进排水
+
+程序产生数据，用户消耗数据
+
+称为生产者和消费者问题
+
+使用队列处理
+
+### 队列简单使用
+
+```python
+>>>import queue
+>>>q = queue.Queue()
+>>>q.put(1)  # 把数据放入队列
+>>>q.put(2)
+>>>q.put(3)
+>>>q.get()   #从队列中取出数据
+1
+>>>q.get()
+2
+>>>q.get()
+3
+```
+
+### 生产者和消费者代码演示：
+
+```py
+from threading import Thread, current_thread
+import time  # sleep
+import random  # 随机数
+from queue import Queue  # 队列
+# 定义队列且长度为5
+queue = Queue(5)
+
+class ProducerThread(Thread):
+    def run(self):
+        name = current_thread().name
+        nums = range(100)
+        global queue
+        while True:
+            num = random.choice(nums)  # 生成随机数
+            queue.put(num)  # 把随机数放入队列
+            print('生产者 %s 生产了数据 %s' % (name, num))
+            t = random.randint(1, 3)
+            time.sleep(t)
+            print('生产者 %s 睡眠了 %s 秒' % (name, t))
+
+class ConsumerThread(Thread):
+    def run(self):
+        name = current_thread().name
+        global queue
+        while True:
+            num = queue.get()  # 从队列里取数据
+            queue.task_done()  # 线程等待和线程同步
+            print('消费者 %s 消耗了数据 %s' % (name, num))
+            t = random.randint(1, 5)
+            time.sleep(t)
+            print('消费者 %s 睡眠了 %s 秒' % (name, t))
+
+# 1个生产者
+p1 = ProducerThread(name='p1')
+p1.start()
+# 2个消费者
+c1 = ConsumerThread(name='c1')
+c1.start()
+c2 = ConsumerThread(name='c2')
+c2.start()
+```
+
+输出：
+
+```python
+生产者 p1 生产了数据 32
+消费者 c1 消耗了数据 32
+生产者 p1 睡眠了 1 秒
+生产者 p1 生产了数据 94
+消费者 c2 消耗了数据 94
+消费者 c1 睡眠了 3 秒
+消费者 c2 睡眠了 2 秒
+生产者 p1 睡眠了 3 秒
+生产者 p1 生产了数据 30
+消费者 c1 消耗了数据 30
+消费者 c1 睡眠了 2 秒
+生产者 p1 睡眠了 3 秒
+生产者 p1 生产了数据 5
+消费者 c2 消耗了数据 5
+消费者 c2 睡眠了 1 秒
+生产者 p1 睡眠了 3 秒
+```
+3个生产者，2个消费者
+
+```python
+# 3个生产者
+p1 = ProducerThread(name='p1')
+p1.start()
+p2 = ProducerThread(name='p2')
+p2.start()
+p3 = ProducerThread(name='p3')
+p3.start()
+# 2个消费者
+c1 = ConsumerThread(name='c1')
+c1.start()
+c2 = ConsumerThread(name='c2')
+c2.start()
+```
+
+输出：
+
+```python
+生产者 p1 生产了数据 67
+生产者 p2 生产了数据 60
+生产者 p3 生产了数据 54
+消费者 c1 消耗了数据 67
+消费者 c2 消耗了数据 60
+消费者 c2 睡眠了 1 秒
+消费者 c2 消耗了数据 54
+生产者 p1 睡眠了 3 秒
+生产者 p3 睡眠了 3 秒
+生产者 p1 生产了数据 7
+生产者 p3 生产了数据 57
+生产者 p2 睡眠了 3 秒
+生产者 p2 生产了数据 85
+消费者 c2 睡眠了 3 秒
+消费者 c2 消耗了数据 7
+消费者 c1 睡眠了 5 秒
+消费者 c1 消耗了数据 57
+生产者 p3 睡眠了 2 秒
+生产者 p3 生产了数据 50
+生产者 p1 睡眠了 3 秒
+消费者 c1 睡眠了 1 秒
+生产者 p1 生产了数据 45
+消费者 c1 消耗了数据 85
+生产者 p2 睡眠了 3 秒
+生产者 p2 生产了数据 67
+```
 
