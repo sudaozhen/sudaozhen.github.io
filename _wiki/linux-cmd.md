@@ -189,7 +189,7 @@ ln [源文件] [目标文件] 创建硬链接
 
 ## 目录操作
 
-### ls
+### ls:fire:
 
 列出目录中的内容
 
@@ -211,7 +211,7 @@ ls -lh         #列出当前目录下的详细信息，并人性化显示大小
 ls -a          #显示当前目录下的隐藏文件
 ```
 
-### cd
+### cd:fire:
 
 切换目录
 
@@ -223,7 +223,7 @@ cd -         #切换到原来的目录
 cd /root     #切换到 /root 目录下
 ```
 
-### pwd
+### pwd:fire:
 
 显示当前目录绝对路径
 
@@ -236,7 +236,7 @@ tree -L 1   #仅显示当前目录下的一级子目录
 tree -d     #仅显示目录
 ```
 
-### du
+### du:fire:
 
 显示目录大小
 
@@ -244,13 +244,121 @@ tree -d     #仅显示目录
 du -sh /root         #显示当前目录大小
 ```
 
-显示当前目录绝对路径
-
 ## 文件操作
+
+### stat
+
+显示文件的 inode 内容
+
+```shell
+stat file1
+```
+
+### rename
+
+重命名
+
+rename 源字符串 目标字符串 文件
+
+```shell
+# 将 name1.txt 重名名为 name.txt
+rename name1.txt name.txt name1.txt
+```
+
+支持的通配符
+
+| 通配符 | 含义                           |
+| ------ | ------------------------------ |
+| ?      | 可替代单个字符                 |
+| *      | 可替代多个字符                 |
+| [char] | 可替代char集合中的任意单个字符 |
+
+假设当前文件夹中有name1，name2 ..., name9, name10, ..., name299
+
+```shell
+rename name name0 name?     
+# 将 name1 到 name9 重命名为 name01 到 name09，即将匹配到的字串（name加任意1个字符）中的name替换为name0
+
+rename name name0 name??    
+# 将 name01 到 name99 重命名为 name001 到 name099，即将匹配到的字串（name加任意2个字符）中的name替换为name0
+
+rename name name0 name*     
+# 将 name001 到 name299 重命名为 name0001 到 name0299，即将匹配到的字串（以name开头）中的name替换为name0
+
+rename name0 name name0[12]*   
+# 将 name0100 到 name0299 重命名为 name100 到 name299，即将匹配到的字串（以name0，后一个字符为1或2开头）中的name0替换为name
+```
+
+正则表达式（Perl 版）（查看方法：rename -V ；util-linux 为非 Perl 版）
+
+```shell
+prename "s/AA/aa/" *
+# 把文件名中的AA替换成aa
+
+prename "s/.html/.php/" *
+# 把 .html 后缀的改成 .php 后缀
+
+prename "s/$/.txt/" *
+# 把所有的文件名都改成以 .txt 结尾
+
+prename "s/.txt//" *
+# 把所有以 .txt 结尾的文件名的 .txt 去掉
+```
+
+### basename
+
+获取文件名
+
+```shell
+basename /root/test.txt      # 提取文件名
+test.txt
+
+basename -s .txt /root/test.txt  #提取文件名并去掉后缀
+test
+```
+
+### dirname
+
+获取路径名
+
+```shell
+dirname /root/test.txt
+/root
+```
+
+### file:fire:
+
+查看文件类型
+
+```shell
+file aaa.txt
+```
+
+### md5sum:fire:
+
+计算文件 md5 值
+
+```shell 
+md5sum file     # 计算 md5 校验值
+
+echo "8fddaad2cac641f6abd3f79cd6ad6da5 file" | md5sum -c # 校验 md5 值
+```
+
+### sha256sum
+
+计算文件 sha256 值
+
+```shell
+sha256sum file     # 计算 sha256 校验值
+
+echo "d0cada789ec90f5a65f2bcdbacb369ddb114a0e3f18648f4be27f3c987d94606 file" | sha256sum -c # 校验 sha256 值
+```
 
 ## 查找
 
 ## 文件权限
+
+### chattr/lsattr
 
 ## 压缩/解压缩
 
