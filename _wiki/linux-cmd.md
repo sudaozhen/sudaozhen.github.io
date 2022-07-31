@@ -341,7 +341,7 @@ file aaa.txt
 ```shell 
 md5sum file     # 计算 md5 校验值
 
-echo "8fddaad2cac641f6abd3f79cd6ad6da5 file" | md5sum -c # 校验 md5 值
+echo "8fddaad2cac641f6abd3f79cd6ad6da5 file" | md5sum -c       # 校验 md5 值
 ```
 
 ### sha256sum
@@ -351,10 +351,85 @@ echo "8fddaad2cac641f6abd3f79cd6ad6da5 file" | md5sum -c # 校验 md5 值
 ```shell
 sha256sum file     # 计算 sha256 校验值
 
-echo "d0cada789ec90f5a65f2bcdbacb369ddb114a0e3f18648f4be27f3c987d94606 file" | sha256sum -c # 校验 sha256 值
+echo "d0cada789ec90f5a65f2bcdbacb369ddb114a0e3f18648f4be27f3c987d94606 file" | sha256sum -c         # 校验 sha256 值
 ```
 
 ## 查找
+
+### find
+
+文件搜索
+
+find [搜索路径] [匹配条件]
+
+| 参数    | 含义                                                         |
+| ------- | ------------------------------------------------------------ |
+| -cmin   | 文件属性改变，单位分钟                                       |
+| -amin   | 访问时间改变，单位分钟                                       |
+| -mmin   | 文件内容变化时间，单位分钟                                   |
+| -ctime  | 文件属性改变，单位天                                         |
+| -atime  | 访问时间改变，单位天                                         |
+| -mtime  | 文件内容变化时间，单位天                                     |
+| -type   | 基于文件类型；f 文件，d 目录，l 软连接；                     |
+| -inum   | 根据i节点查找                                                |
+| -iname  | 文件名忽略大小写                                             |
+| -size   | 根据大小查找，默认单位为1个数据块（0.5KB）；支持k（KiB），M（MiB），G（GiB） |
+| -user   | 查找所属用户                                                 |
+| -regex  | 正则表达式                                                   |
+| -iregex | 忽略大小写的正则表达式                                       |
+| -perm   | 查找权限                                                     |
+| -a      | 两个条件同数满足                                             |
+| -o      | 满足一个即可                                                 |
+| -exec   | 找到文件后执行后续操作                                       |
+| -ok     | 找到文件后执行后续操作，但需确认                             |
+
+```shell
+find /etc -name init       #查找文件名为init
+find /etc -name *init*     #查找文件包含init
+find /etc -type d -name rc*   #查找/etc下 rc开头的文件夹
+find /etc -iname init      #查找文件init（忽略大小写）
+find /etc -size +204800    #查找大于100MB的文件，默认单位为数据块，1数据块=0.5KB
+find /etc -size +10M       #查找大于10MB的文件
+find /etc -user abc        #查找属于abc用户的文件
+find /etc -cmin -5         #查找5分钟内修改过属性的文件，+5表示超过5分钟
+find / -perm -0777         #查找权限为777的文件
+find /etc -name inittab -exec ls -l {} \;   #将找到的文件执行 ls -l 操作
+find -inum 2629483 -exec rm {} \;    #根据i节点来删除文件，适用于特殊文件名
+find / -perm -4000 -o -perm -2000    #查找系统中具有UID权限的文件
+```
+
+### which
+
+查找命令路径，是否有别名
+
+```shell
+which rm
+```
+
+### whereis
+
+查找命令路径，及帮助文档
+
+```shell
+whereis ls
+```
+
+### locate
+
+基于索引的搜素，速度比 find 快，但实时性不如 find
+
+locate [文件名]
+
+| 选项 | 含义       |
+| ---- | ---------- |
+| -i   | 忽略大小写 |
+
+```shell
+locate file  # 全盘搜索 file
+updatedb     # 更新索引
+```
+
+/tmp 不在索引范围内
 
 ## 文件权限
 
