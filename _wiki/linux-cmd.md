@@ -643,7 +643,45 @@ bunzip2 file.bz2    # 将 file.bz2 解压缩
 
 ## 查找文本内容
 
+### grep:fire:
+
+查找文件内字符串
+
+grep 选项 文件名
+
+| 选项 | 含义                           |
+| ---- | ------------------------------ |
+| -i   | 忽略大小写                     |
+| -v   | 排除字符串                     |
+| -E   | 正则表达式                     |
+| -n   | 显示源文件行数                 |
+| -w   | 显示全匹配                     |
+| -c   | 显示匹配的列数                 |
+| -A   | 显示匹配行之后的内容行数       |
+| -B   | 显示匹配行之前的内容行数       |
+| -C   | 显示匹配行之前和之后的内容行数 |
+
+```shell
+grep 111 file         # 匹配 file 中包含 111 的行
+grep -i ac file       # 匹配 file 中包含 ac、AC、Ac、aC 的行，忽略大小写
+grep -v aa file       # 匹配 file 中不包含 aa 的行
+grep -E "aa|bb" file  # 匹配 file 中包含 aa 或 bb 的行
+grep -A 2 aa file     # 匹配 file 中包含 aa 的行及其后2行（不含aa所在行）
+```
+
 ## 查看文本内容
+
+### cat:fire:
+
+### more
+
+### less:fire:
+
+### head
+
+### tail:fire:
+
+### tac
 
 ## 文本处理
 
