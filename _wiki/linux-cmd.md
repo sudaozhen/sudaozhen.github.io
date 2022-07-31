@@ -356,7 +356,7 @@ echo "d0cada789ec90f5a65f2bcdbacb369ddb114a0e3f18648f4be27f3c987d94606 file" | s
 
 ## 查找
 
-### find
+### find:fire:
 
 文件搜索
 
@@ -416,7 +416,7 @@ whereis ls
 
 ### locate
 
-基于索引的搜素，速度比 find 快，但实时性不如 find
+基于索引的搜索，速度比 find 快，但实时性不如 find
 
 locate [文件名]
 
@@ -433,9 +433,211 @@ updatedb     # 更新索引
 
 ## 文件权限
 
-### chattr/lsattr
+### chown:fire:
 
-## 压缩/解压缩
+| 用法                             | 含义                             |
+| -------------------------------- | -------------------------------- |
+| chown [用户] [文件或目录]        | 改变所有者，只有root可以改所有人 |
+| chown [:组名] [文件或目录]       | 改变所属组                       |
+| chown [用户名:组名] [文件或目录] | 同时改变所属组和所有者           |
+
+ ```shell
+ chown test file1        # 将 file1 的所属者改为 test
+ chown :test file1       # 将 file1 的所属组改为 test
+ chown test:test file1   # 将 file1 的所属者改为 test，所属组改为 test
+ ```
+
+### chgrp
+
+改变所属组
+
+```shell
+chgrp test file1        # 将 file1 的所属组改为 test
+```
+
+### chmod:fire:
+
+修改文件或目录权限
+
+chmod [{ugoa}{+-=}{rwx}] [文件或目录]
+
+| 选项 | 含义                                                  |
+| ---- | ----------------------------------------------------- |
+| u    | 所有者                                                |
+| g    | 所属组                                                |
+| o    | 其他人                                                |
+| a    | 所有                                                  |
+| +    | 增加                                                  |
+| -    | 移除                                                  |
+| =    | 指定                                                  |
+| r    | 读（4），可以查看文件内容，列出目录中的内容           |
+| w    | 写（2），可以修改文件内容，可以在目录中创建、删除文件 |
+| x    | 执行（1），可以执行文件，可以进入目录                 |
+| -R   | 递归修改                                              |
+
+```shell
+chmod g+w,o-r filename    # 将 filename 所属组增加写权限，其他人去掉读权限
+chmod u+x filename        # 将 filename 所有者增加执行权限
+chmod 644 filename        # 将 filename 权限指定为：所有者可读写，所属组和其他人为只读，但所有人都不可执行
+
+chmod u+s filename        # 将 filename 增加 SUID 权限，即执行该文件权限变为root
+chmod u-s filename        # 将 filename 去掉 SUID 权限
+
+chmod g+s filename        # 将 filename 增加 SGID 权限，即执行该文件时权限变为该文件的所属组
+chmod g+s dirname         # 将 dirname 增加 SGID 权限，即其他用户在此目录创建的文件属组为该目录的属组
+chmod g-s filename        # 将 filename 去掉 SGID 权限
+
+chmod o+t dirname         # 将 dirname 增加 SBIT 粘着位权限，即用户对该目录下的所有文件都有写权限，但只能删除此目录下自己创建的文件，而无法删除其他用户创建的文件。
+chmod o-t dirname         # 将 dirname 去掉 SBIT 粘着位权限
+```
+
+### chattr 
+
+设置文件系统属性
+
+chattr [+-=] [选项] 文件或目录名
+
+| 选项      | 含义                                             |
+| --------- | ------------------------------------------------ |
+| +         | 增加权限                                         |
+| -         | 删除权限                                         |
+| =         | 等于某权限                                       |
+| i（文件） | 不允许对文件进行删除、改名，也不能添加和修改数据 |
+| i（目录） | 只能修改目录下文件的数据，但不允许建立和删除文件 |
+| a（文件） | 只能在文件中增加数据，但是不能删除也不能修改数据 |
+| a（目录） | 只允许在目录中建立和修改文件，但是不允许删除     |
+
+```shell
+chattr +i filename     # 对 filename 增加i权限
+```
+
+### lsattr
+
+查看文件系统属性
+
+lsattr 选项 文件名
+
+| 选项 | 含义                                               |
+| ---- | -------------------------------------------------- |
+| -a   | 显示所有文件和目录，含隐藏文件                     |
+| -d   | 若目标是目录，仅列出目录本身的属性，而不是子文件的 |
+
+```shell
+lsattr filename     # 显示 filename 的文件系统属性
+```
+
+### setfacl
+
+设置文件 ACL 权限
+
+setfacl [选项] [文件或目录名]
+
+| 选项 | 含义              |
+| ---- | ----------------- |
+| -m   | 设定ACL权限       |
+| -x   | 删除指定的ACL权限 |
+| -b   | 删除所有的ACL权限 |
+| -d   | 设定默认ACL权限   |
+| -k   | 删除默认ACL权限   |
+| -R   | 递归设定ACL权限   |
+
+设定用户 ACL 权限
+
+setfacl -m u:用户名:权限 文件名或目录名
+
+```shell
+setfacl -m u:test:rx dir/      # 设置 test 用户只可查看 dir 目录内的文件，但不可删除、创建或修改目录内的文件
+```
+
+设定用户组 ACL 权限
+
+setfacl -m g:组名:权限 文件名或目录名
+
+```shell
+setfacl -m g:test:rwx dir     # 设置 test 组对 dir 目录拥有全部权限
+```
+
+其他用法
+
+```shell
+setfacl -m m:rx 文件名或目录名      # 设置指定文件的最大有效权限
+setfacl -x u:用户名 文件名或目录名   # 删除指定用户对指定文件或目录的全部 ACL 权限
+setfacl -x g:组名 文件名或目录名     # 删除指定用户组对指定文件或目录的全部 ACL 权限
+setfacl -b 文件名或目录名            # 删除指定文件或目录的所有 ACL 权限
+setfacl -m u:用户名:权限 -R 目录名   # 设定指定目录下的所有文件的 ACL 权限
+setfacl -m d:u:用户名:权限 目录名    # 设定指定目录的默认 ACL 权限，即该目录下后建的文件都遵循此权限，再此之前设置的权限不受影响
+```
+
+### getfacl
+
+查看文件 ACL 权限
+
+```shell
+getfacl filename    # 查看 filename 的 ACL 权限
+```
+
+## 压缩 / 解压缩
+
+### gzip
+
+gzip -d xxx.gz    解压gz压缩包，默认删除源文件
+
+gunzip xxx.gz    解压gz压缩包
+
+gzip [文件] *.gz   压缩文件，只能压缩文件
+
+```shell
+gzip -d file.gz        # 解压 file.gz ,并删除 file.gz
+gzip file file.gz      # 将 file 压缩为 file.gz, 并删除源文件 file
+```
+
+### tar:fire:
+
+| 选项 | 含义              |
+| ---- | ----------------- |
+| -f   | 指定压缩文件名    |
+| -c   | 创建打包          |
+| -z   | 压缩（*.tar.gz）  |
+| -v   | 显示详细信息      |
+| -j   | 压缩（*.tar.bz2） |
+| -C   | 解压路径          |
+
+```shell
+tar -cvf file.tar file    # 将 file 打包成 file.tar
+tar -cvf dir.tar dir/     # 将 文件夹 dir 打包成 dir.tar
+gzip file.tar file.tar.gz # 将 file.tar 压缩成 file.tar.gz
+tar -czvf dir.tar.gz dir    # 将以上两步合并，打包并压缩 dir 目录
+tar -czvf file.tar.gz file1 file2 file3 # 将多个文件打包并压缩成 file.tar.gz
+tar -xzvf file.tar.gz     # 将 file.tar.gz 解压缩并解包
+tar -xzvf file.tar.gz -C /root  # 将 file.tar.gz 解压缩并解包到 /root 目录下
+
+tar -cjvf dir.tar.bz2 dir/  # 将 dir 打包压缩成 file.tar.bz2
+tar -xjvf dir.tar.bz2       # 将 dir.tar.bz2 加压缩并解包
+
+tar -xvf file.tar.xz        # 将 file.tar.xz 解压缩并解包
+xz file.tar                 # 将 file.tar 包 压缩为 file.tar.xz，并删除 file.tar
+```
+
+
+
+### zip / unzip:fire:
+
+zip -r *.zip [文件或目录]     压缩文件或目录为zip
+
+unzip *.zip                解压zip文件
+
+```shell
+zip -r file.zip file    # 将 file 压缩成 file.zip
+unzip file.zip          # 将 file.zip 解压缩 
+```
+
+### bzip2 / bunzip2
+
+```shell
+bzip2 file          # 将 file 压缩为 file.bz2, 并删除 file
+bzip2 -k file       # 将 file 压缩为 file.bz2, 不删除 file
+bunzip2 file.bz2    # 将 file.bz2 解压缩
+```
 
 # 文本处理
 
