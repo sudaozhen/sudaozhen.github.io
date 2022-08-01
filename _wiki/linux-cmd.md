@@ -656,11 +656,13 @@ grep 选项 文件名
 | -E   | 正则表达式                     |
 | -n   | 显示源文件行数                 |
 | -w   | 显示全匹配                     |
-| -c   | 显示匹配的列数                 |
+| -c   | 显示匹配的行数                 |
 | -A   | 显示匹配行之后的内容行数       |
 | -B   | 显示匹配行之前的内容行数       |
 | -C   | 显示匹配行之前和之后的内容行数 |
 | -q   | 不显示任何信息                 |
+| -a   | 不要忽略二进制数据             |
+| -o   | 只显示匹配到的字符             |
 
 ```shell
 grep 111 file         # 匹配 file 中包含 111 的行
@@ -746,6 +748,132 @@ tac filename    # 倒叙显示filename
 ```
 
 ## 文本处理
+
+### cut:fire:
+
+字段提取
+
+| 选项 | 含义                           |
+| ---- | ------------------------------ |
+| -f   | 提取列号                       |
+| -d   | 指定分隔符，不指定默认为制表符 |
+| -c   | 按字符提取                     |
+
+准备以下文本 filename(456 和 abc 之间为制表符)：
+
+123 = 456		abc
+
+```shell
+cut -f 2 filename    # 使用默认制表符作为分隔符，提取 filename 的第2列
+结果：abc
+
+cut -f 1 -d "=" filename   # 使用"="作为分隔符，提取 filename 的第1列
+结果：123
+
+cut -c 1-5 filename        # 提取 filename 的第1到5个字符
+结果：123 =
+```
+
+### sed:fire:
+
+
+
+### awk:fire:
+
+### wc:fire:
+
+统计
+
+```shell
+wc filename     # 统计 filename 文件的行数、单词数、字节数
+wc -l filename  # 统计 filename 文件的行数
+```
+
+### uniq
+
+去除重复行
+
+```shell
+uniq filename   # 去除 filename 文件中重复的行
+```
+
+### diff / patch
+
+### split
+
+拆分文件
+
+split <参数> <要分割的文件> [输出文件名前缀]
+
+| 参数 | 含义                                                         |
+| ---- | ------------------------------------------------------------ |
+| -b   | 指定每个分割文件的大小，单位有K、M、G、P等                   |
+| -d   | 指定分割文件的后缀为数字                                     |
+| -a   | 指定分割文件数字后缀的长度，如果是1，后缀为0,1,2…；如果是2，则为00,01,02…；默认是2 |
+| -C   | 指定每行最大的字节数                                         |
+| -l   | 指定每个文件最大的行数                                       |
+
+```shell
+split -b 100M -d -a 1 test.tar.gz test.tar.gz.    # 将 test.tar.gz 压缩包拆分成100MB大小的小包，输出命名为 test.tar.gz.1、test.tar.gz.2、test.tar.gz.3 ...
+cat test.tar.gz.* | tar -zxv    # 将分卷压缩包解压
+```
+
+### paste
+
+合并文件
+
+```shell
+paste file1 file2 file3    # 将file1、file2、file3 按列合并
+paste -s file1 file2 file3    # 将file1、file2、file3 按行合并
+```
+
+### sort
+
+排序
+
+```shell
+sort filename         # 将 filename 的内容正向排序
+sort -r filename      # 将 filename 的内容反向排序
+```
+
+### join
+
+文本按相同列名合并
+
+测试文本：
+
+file1:
+
+```
+aaa 123
+bbb 456
+```
+
+file2:
+
+```
+aaa 88
+bbb 99
+```
+
+```shell
+join file1 file2   # 将file1 和 file2 按相同列名合并
+```
+
+结果：
+
+```
+aaa 123 88
+bbb 456 99
+```
+
+### tr
+
+转换或删除文件中的字符
+
+```shell
+cat file | tr a-z A-Z       # 将file中的字母全部转换成大写
+```
 
 # 磁盘和文件系统
 
