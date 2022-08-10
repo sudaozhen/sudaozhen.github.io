@@ -802,7 +802,7 @@ awk中使用$1 $2 … $n 表示每一个字段，$0为整行
 awk '{ print $1,$2,$3}' filename
 ```
 
-awk 可以使用-F选项改变字段分隔符
+awk 可以使用 -F 选项改变字段分隔符
 
 ```shell
 awk -F ',' '{ print $1,$2,$3}' filename
@@ -814,6 +814,12 @@ awk -F ',' '{ print $1,$2,$3}' filename
 
 ```shell
 awk -F "'" '/^menu/{ print x++,$2 }' /boot/grub2/grub.cfg
+# 打印以 menu 开头的第二列
+```
+
+结果：
+
+```shell
 0 CentOS Linux (5.1.11) 7 (Core)
 1 CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core)
 2 CentOS Linux (0-rescue-2362688d55a948b0a2829c283eab17e9) 7 (Core)
@@ -862,16 +868,16 @@ var3 = $1
 - FS 和 OFS 字段分隔符，FS表示输入文件以什么分隔符判断，OFS 表示输出的字段分隔符
 
 ```shell
-  head -5 /etc/passwd | awk 'BEGIN{FS=":";OFS=","}{print $1,$2}'
-  # 读入分隔符使用":"，输出分隔符使用","
+head -5 /etc/passwd | awk 'BEGIN{FS=":";OFS=","}{print $1,$2}'
+# 读入分隔符使用":"，输出分隔符使用","
 ```
 
-- RS记录分隔符，默认为换行符
+- RS 记录分隔符，默认为换行符
 
-  ```shell
-  head -5 /etc/passwd | awk 'BEGIN{RS=":"}{print $0}'
-  # 以“:”作为一条记录的分割符
-  ```
+```shell
+head -5 /etc/passwd | awk 'BEGIN{RS=":"}{print $0}'
+# 以“:”作为一条记录的分隔符
+```
 
 - NR 和 FNR 行数；处理多文件时，FNR跟随文件，NR则为总行数；
 
@@ -916,7 +922,204 @@ if (表达式)
 awk '{if($2>=80) {print $1; print $2} }' filename
 ```
 
+#### awk循坏语句
 
+##### while 循坏
+
+```shell
+while(表达式)
+	awk 语句1
+```
+
+##### do 循环
+
+```shell
+do{
+	awk 语句1
+}while(表达式)
+```
+
+##### for 循环
+
+```shell
+for(初始值; 循环判断条件; 累加)
+	awk 语句1
+```
+
+例：
+
+```shell
+awk '{sum=0; for(c=2;c<=NF;c++) sum+=$c; print sum/(NF-1)}' filename
+# 计算第2列到最后一列的平均数
+```
+
+##### 影响控制的其他语句
+
+- break
+- continue
+
+#### awk 数组
+
+##### 数组的定义
+
+数组：一组有某种关联的数据（变量），通过下标依次访问
+
+```shell
+数组名[下标]=值
+```
+
+下标可以使用数字也可以使用字符串
+
+##### 数组的遍历
+
+```shell
+for(变量 in 数组名)
+	使用 数组名[变量] 的方式依次对每个数组的元素进行操作
+```
+
+##### 删除数组
+
+```shell
+delete 数组[下标]
+```
+
+```shell
+awk '{ sum=0; for(c=2;c<=NF;c++) sum+=$c; avg[$1]=sum/(NF-1)}END{ for(user in avg) sum2+=avg[user] ;print sum2/NR}' filename
+```
+
+```shell
+awk -f script.awk filename  # awk使用脚本文件处理filename
+```
+
+##### 命令行参数数组
+
+- ARGC  awk 参数数量
+- ARGV  awk 参数数组
+
+##### 数组综合应用处理脚本
+
+处理数据文件<kpi.txt>:
+
+```markdown
+user1 70 72 74 76 74 72
+user2 80 82 84 82 80 78
+user3 60 61 62 63 64 65
+user4 90 89 88 87 86 85
+user5 45 60 63 62 61 50
+```
+
+awk脚本文件<result.awk>:
+
+```shell
+{
+sum = 0
+for(c = 2; c <= NF; c++)
+    sum += $c
+avg[$1] = sum / ( NF - 1 )
+
+if( avg[$1] >= 80 )
+    letter = "S"
+else if( avg[$1] >= 70 )
+    letter = "A"
+else if( avg[$1] >= 60 )
+    letter = "B"
+else
+    letter = "C"
+
+letter_all[letter]++
+print $1,avg[$1],letter
+
+}
+END{
+for( user in avg )
+    sum_all += avg[user]
+
+avg_all = sum_all / NR
+print "average all:" avg_all
+
+for( user in avg )
+    if( avg[user] > avg_all )
+        above++
+    else
+        below++
+
+print "above",above
+print "below",below
+print "S:",letter_all["S"]
+print "A:",letter_all["A"]
+print "B:",letter_all["B"]
+print "C:",letter_all["C"]
+}
+```
+
+执行：
+
+```shell
+awk -f result.awk kpi.txt
+```
+
+结果：
+
+```shell
+user1 73 A
+user2 81 S
+user3 62.5 B
+user4 87.5 S
+user5 56.8333 C
+average all:72.1667
+above 3
+below 2
+S: 2
+A: 1
+B: 1
+C: 1
+```
+
+#### awk 函数
+
+##### 算数函数
+
+| 函数    | 含义                        |
+| ------- | --------------------------- |
+| sin()   | 正弦函数                    |
+| cos()   | 余弦函数                    |
+| int()   | 取整                        |
+| rand()  | 基于种子的伪随机数 ,范围0~1 |
+| srand() | 重新获取种子，两者配合使用  |
+
+```shell
+awk 'BEGIN{pi=3.14; print int(pi) }'  # 取整，结果：3
+
+awk 'BEGIN{srand();print rand()}'     # 生成随机数
+```
+
+##### 字符函数
+
+| 函数             | 含义                                        |
+| ---------------- | ------------------------------------------- |
+| gsub( r,s )      | 在整个 $0 中用 s 替代 r                     |
+| gsub( r,s,t )    | 在整个 t 中用 s 替代 r                      |
+| index( s,t )     | 返回 s 中 字符串t 的第一位置                |
+| length( s )      | 返回 s 长度                                 |
+| match( s,r )     | 测试 s 是否包含匹配r的字符串                |
+| split( s,a,sep ) | 在 sep 上将 s 分成序列 a                    |
+| sub( r,s,t )     | 用 t 中最左边最长的子串代替 s               |
+| substr( s,p,n )  | 返回 字符串s 中从 p 开始长度为 n 的后缀部分 |
+
+##### 自定义函数
+
+```shell
+function 函数名(参数){
+	awk语句
+	return awk变量
+}
+```
+
+例：
+
+```shell
+awk 'function a(str){ return str str} BEGIN{ print a("b")}'
+```
 
 ### wc:fire:
 
