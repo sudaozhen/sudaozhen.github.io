@@ -1396,7 +1396,199 @@ cat file | tr a-z A-Z       # 将file中的字母全部转换成大写
 
 ## 磁盘
 
+### du
+
+### df
+
+### sync
+
+### fdisk
+
+### parted
+
+### mdadm
+
+### lsblk
+
 ## 文件系统
+
+### mount:fire:
+
+挂载
+
+| 选项 | 含义                                                         |
+| ---- | ------------------------------------------------------------ |
+| -l   | 查询系统中已挂载的设备并显示卷标名称                         |
+| -a   | 依据配置文件 /etc/fstab 的内容，自动挂载                     |
+| -t   | 文件系统类型，ext3、ext4、iso9660、vfat（FAT32）、fat（FAT16） |
+| -L   | 卷标名                                                       |
+| -o   | 特殊选项，见下表                                             |
+
+| -o特殊选项    | 说明                                                         |
+| ------------- | ------------------------------------------------------------ |
+| atime/noatime | 更新访问时间/不更新访问时间。访问分区文件时，是否更新文件的访问时间，默认为更新 |
+| async/sync    | 异步/同步，默认为异步                                        |
+| auto/noauto   | 自动/手动，mount  -a命令执行时，是否会自动安装/etc/fstab文件内容挂载，默认为自动 |
+| defaults      | 定义默认值，相当于rw，suid，dev，exec，auto，nouser，async这七个选项 ，<span style="color:red">可移动硬盘不推荐defaults，推荐使用"nodev，nofail"</span> |
+| exec/noexec   | 执行/不执行，设定是否允许在文件系统中执行可执行文件，默认是exec允许 |
+| remount       | 重新挂载已经挂载的文件系统，一般用于指定修改特殊权限         |
+| rw/ro         | 读写/只读，文件系统挂载时，是否具有读写权限，默认是rw        |
+| suid/nosuid   | 具有/不具有SUID权限，设定文件系统是否具有SUID和SGID的权限，默认是具有 |
+| user/nouser   | 允许/不允许普通用户挂载，设定文件系统是否允许普通用户挂载，默认是不允许，只有roof可以挂载分区 |
+| usrquota      | 写入代表文件系统支持用户磁盘配额，默认不支持                 |
+| grpquota      | 写入代表文件系统支持组磁盘配额，默认不支持                   |
+| dev/nodev     | 默认dev                                                      |
+| nofail        | 如果设备故障也不影响引导启动，<span style="color:red">自动挂载推荐加上，若无此设备，系统启动不会卡住，推荐"defaults，nofail"</span> |
+
+```shell
+mount      # 查询系统中已挂载的设备
+mount -l   # 查询系统中已挂载的设备并显示卷标名称
+mount [-t 文件系统] [-L 卷标名] [-o 特殊选项] 设备文件名 挂载点
+
+mount -o remount,noexec /home    # /home必须是单独的分区，重新挂载/home分区，并使用noexec权限
+
+mount -t iso9660 /dev/cdrom /mnt/cdrom     # 挂载光盘
+mount /dev/sr0 /mnt/cdrom        #挂载光盘
+
+mount -o loop /root/rhel7.iso /media   # 挂载iso光盘文件
+```
+
+### umount:fire:
+
+卸载
+
+```shell
+umount 设备文件名或挂载点
+umount /mnt/cdrom    # 卸载，挂载点
+umount /dev/sde1     # 卸载，设备名
+```
+
+### eject
+
+弹出光驱
+
+### dd
+
+| 参数  | 含义                           |
+| ----- | ------------------------------ |
+| if    | 输入                           |
+| of    | 输出                           |
+| ibs   | 一次读入字节数                 |
+| obs   | 一次输出字节数                 |
+| bs    | 同时设置读入/输出的块大小      |
+| cbs   | 一次转换字节数                 |
+| skip  | 从输入文件开头跳过块数         |
+| seek  | 从输出文件开头跳过块数后再复制 |
+| count | 仅复制块数                     |
+
+```shell
+dd if=/dev/zero bs=4M count=10 of=/afile  
+# 生成全0文件/afile，大小为40MB
+
+dd if=/dev/zero bs=4M count=10 seek=20 of=/bfile  
+# 生成全0文件/bfile，ls显示120MB，du显示40MB，“seek=20”代表跳过 4MBx20
+
+dd if=/dev/sda of=mbr.bin bs=512 count=1  # 备份sda的mbr
+dd if=/dev/sda of=/dev/sdb     # 将/dev/sda整盘备份到/dev/sdb
+dd if=/dev/sda of=/root/image  # 将/dev/sda整盘备份到/root/image文件中
+dd if=/root/image of=/dev/sda  # 将备份的/root/image文件恢复到/dev/sda中
+dd if=/dev/sdb | gzip > /root/image.gz    # 将/dev/sdb的数据压缩并备份到/root/image.gz中
+gzip -dc /root/image.gz | dd of=/dev/sdb  # 将/root/image.gz解压并还原到/dev/sdb中
+dd if=/dev/urandom of=/dev/sda1  # 利用随机数填充/dev/sda1
+dd if=/dev/mem of=/root/mem.bin bs=1024   # 复制内存中的数据到/root/mem.bin,大小为1kB
+dd if=/dev/cdrom of=/root/cd.iso  # 备份光盘内容到/root/cd.iso 
+```
+
+### mkfs
+
+### fsck
+
+### swap交换分区
+
+#### mkswap
+
+格式化swap文件
+
+```shell
+mkswap /swapfile    # swap文件
+mkswap /dev/sdb6    # swap分区
+```
+
+#### swapon
+
+加入swap
+
+```shell
+swapon /swapfile    # swap文件
+swapon /dev/sdb6    # swap分区
+```
+
+#### swapoff
+
+取消swap分区
+
+```shell
+swapoff /dev/sdb6    # swap文件
+swapoff /dev/sdb6    # swap分区
+```
+
+### LVM管理
+
+#### pvcreate
+
+创建物理卷
+
+```shell
+pvcreate /dev/sd[b,c,d]1
+```
+
+#### pvs
+
+查看物理卷
+
+#### vgcreate
+
+创建卷组
+
+```shell
+vgcreate vg1 /dev/sdb1 /dev/sdc1
+```
+
+#### lvcreate
+
+创建逻辑卷
+
+```shell
+lvcreate -L 100M -n lv1 vg1
+```
+
+#### lvs
+
+查看逻辑卷
+
+#### vgextend
+
+扩充卷组
+
+```shell
+vgextend centos /dev/sdd1
+```
+
+#### lvextend
+
+扩充逻辑卷
+
+```shell
+lvextend -L +100G /dev/centos/root
+```
+
+#### xfs_growfs
+
+扩充文件系统
+
+```shell
+xfs_growfs /dev/centos/root
+```
 
 # 系统管理和资源监控
 
@@ -1431,3 +1623,5 @@ cat file | tr a-z A-Z       # 将file中的字母全部转换成大写
 # 软件包管理
 
 # 其他命令
+
+hexdump
